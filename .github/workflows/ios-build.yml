@@ -33,9 +33,13 @@ jobs:
           echo "Xcode Command Line Tools already installed"
         fi
 
+    - name: Create Buildozer spec file
+      run: |
+        buildozer init || true  # Создание buildozer.spec, если его нет
+        echo 'source.dir = vismon' >> buildozer.spec  # Устанавливаем путь к исходникам
+
     - name: Prepare Buildozer
       run: |
-        buildozer init || true  # Инициализация, если spec-файла нет
         buildozer -v ios debug
 
     - name: Archive the IPA
