@@ -24,10 +24,14 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install buildozer cython
 
-    - name: Install Xcode Command Line Tools
+    - name: Install Xcode Command Line Tools (if not already installed)
       run: |
-        sudo xcode-select --install
-        sudo xcodebuild -license accept
+        if ! xcode-select -p; then
+          sudo xcode-select --install
+          sudo xcodebuild -license accept
+        else
+          echo "Xcode Command Line Tools already installed"
+        fi
 
     - name: Prepare Buildozer
       run: |
