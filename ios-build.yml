@@ -1,0 +1,42 @@
+name: Build iOS App with Buildozer
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install buildozer cython
+
+    - name: Install Xcode Tools
+      run: |
+        brew install --cask xcode
+        sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+        sudo xcodebuild -license accept
+
+    - name: Prepare Buildozer
+      run: |
+        buildozer init || true  # Инициализация, если spec-файла нет
+        buildozer -v ios debug
+
+    - name: Archive the IPA
+      uses: actions/upload-artifact@v3
+      with:
+        name: vismon-ios-app
+        path: bin/ios/*debug.ipa
