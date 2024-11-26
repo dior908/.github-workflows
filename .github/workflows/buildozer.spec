@@ -1,52 +1,29 @@
-name: Build iOS App with Buildozer
+[app]
+# Название приложения
+title = Vismon
+# Пакетное имя приложения (используйте уникальное имя)
+package.name = vismon
+package.domain = org
+# Версия приложения
+version = 1.0.0
+# Описание
+description = Medical Representative Control App
+# Путь к исходным кодам приложения
+source.dir = .  # Указывает на текущую директорию, где находятся ваши файлы
+# Директории и расширения файлов для включения
+source.include_exts = py,png,jpg,kv,atlas
+# Зависимости
+dependencies = python3,kivy
 
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+# Настройки для сборки iOS
+ios.kivy_ios = true
+ios.apple_sdk_version = 15.0  # Убедитесь, что версия SDK совместима с вашим проектом
+ios.min_ios_version = 12.0
 
-jobs:
-  build-ios:
-    runs-on: macos-latest
+# Иконка приложения
+package.icon = icon.png  # Укажите путь к изображению иконки вашего приложения (если оно есть)
 
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
+# Установка Xcode версии для сборки
+xcode = 15  # Версия Xcode для вашего проекта
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install buildozer cython
-
-    - name: Install Xcode Command Line Tools (if not already installed)
-      run: |
-        if ! xcode-select -p; then
-          sudo xcode-select --install
-          sudo xcodebuild -license accept
-        else
-          echo "Xcode Command Line Tools already installed"
-        fi
-
-    - name: Create or Update Buildozer Spec File
-      run: |
-        if [ ! -f buildozer.spec ]; then
-          buildozer init  # Создание buildozer.spec, если его нет
-        fi
-        # Устанавливаем правильный путь к исходным файлам
-        echo 'source.dir = vismon' >> buildozer.spec
-
-    - name: Prepare Buildozer for iOS
-      run: |
-        buildozer -v ios debug
-
-    - name: Archive the IPA
-      uses: actions/upload-artifact@v3
-      with:
-        name: vismon-ios-app
-        path: bin/ios/*debug.ipa
+# Другие настройки могут быть добавлены, если нужно
